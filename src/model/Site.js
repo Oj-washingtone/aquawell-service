@@ -1,4 +1,4 @@
-import db_config from "../../configs/db";
+import db_config from "../../configs/db.js";
 import { DataTypes } from "sequelize";
 
 const Site = db_config.define("site", {

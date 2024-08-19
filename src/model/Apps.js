@@ -1,4 +1,4 @@
-import db_config from "../../configs/db";
+import db_config from "../../configs/db.js";
 import { DataTypes } from "sequelize";
 
 const Apps = db_config.define("apps", {

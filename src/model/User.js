@@ -1,4 +1,4 @@
-import db_config from "../../configs/db";
+import db_config from "../../configs/db.js";
 import { DataTypes } from "sequelize";
 
 const User = db_config.define("user", {
@@ -33,3 +33,5 @@ const User = db_config.define("user", {
     allowNull: false,
   },
 });
+
+export default User;
