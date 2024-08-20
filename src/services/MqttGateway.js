@@ -1,13 +1,16 @@
 import mqtt from "mqtt";
+import { config } from "dotenv";
+
+config();
 
 class MqttGateway {
   constructor() {
     this.messageQueue = [];
     this.connected = false;
-    this.broker = "mqtt://144.91.79.8:1883";
+    this.broker = process.env.MQTT_BROKER;
     this.options = {
-      username: "aquawell",
-      password: "AquaWell#tools12",
+      username: process.env.MQTT_USERNAME,
+      password: process.env.MQTT_PASSWORD,
       reconnectPeriod: 1000, // Reconnect every 1 second
       connectTimeout: 30 * 1000, // Connection timeout after 30 seconds
     };
