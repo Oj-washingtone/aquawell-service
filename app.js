@@ -4,7 +4,9 @@ import cors from "cors";
 import MqttGateway from "./src/services/MqttGateway.js";
 import syncModels from "./src/model/setup.js";
 import db_config from "./configs/db.js";
-import mqtt from "mqtt";
+
+// routes
+import topicsRouter from "./src/routes/topic.route.js";
 
 const app = express();
 
@@ -15,6 +17,7 @@ app.set("port", process.env.PORT || 4000);
 app.use(morgan("combined"));
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 db_config
   .authenticate()
@@ -33,5 +36,7 @@ db_config
 const mqttGateway = new MqttGateway();
 
 // routes
+
+app.use("/topics", topicsRouter);
 
 export default app;

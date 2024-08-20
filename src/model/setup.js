@@ -1,18 +1,22 @@
 import db_config from "../../configs/db.js";
-import Apps from "./Apps.js";
+import App from "./Apps.js";
 import User from "./User.js";
 import Site from "./Site.js";
 import Topics from "./Topics.js";
+import Organization from "./Organization.js";
+
+Organization.hasMany(Site, { foreignKey: "organizationId" });
+Site.belongsTo(Organization, { foreignKey: "organizationId" });
 
 // associations
-Apps.belongsTo(Site, { foreignKey: "siteId" });
-Site.hasMany(Apps, { foreignKey: "siteId" });
+Site.hasOne(App, { foreignKey: "siteId" });
+App.belongsTo(Site, { foreignKey: "siteId" });
 
-User.belongsTo(Site, { foreignKey: "siteId" });
-Site.hasMany(User, { foreignKey: "siteId" });
+User.belongsTo(Organization, { foreignKey: "organizationId" });
+Organization.hasMany(User, { foreignKey: "organizationId" });
 
-Topics.belongsTo(Apps, { foreignKey: "appId" });
-Apps.hasMany(Topics, { foreignKey: "appId" });
+Topics.belongsTo(App, { foreignKey: "appId" });
+App.hasMany(Topics, { foreignKey: "appId" });
 
 async function syncModels() {
   try {

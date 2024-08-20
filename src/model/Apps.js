@@ -1,7 +1,7 @@
 import db_config from "../../configs/db.js";
 import { DataTypes } from "sequelize";
 
-const Apps = db_config.define("apps", {
+const App = db_config.define("apps", {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
@@ -35,4 +35,4 @@ const Apps = db_config.define("apps", {
   },
 });
 
-export default Apps;
+export default App;
