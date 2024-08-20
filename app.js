@@ -6,7 +6,10 @@ import syncModels from "./src/model/setup.js";
 import db_config from "./configs/db.js";
 
 // routes
+import authRouter from "./src/routes/auth.router.js";
 import topicsRouter from "./src/routes/topic.route.js";
+import organisationsRouter from "./src/routes/organisations.router.js";
+import siteRouter from "./src/routes/site.route.js";
 
 const app = express();
 
@@ -36,7 +39,9 @@ db_config
 const mqttGateway = new MqttGateway();
 
 // routes
-
+app.use("/auth", authRouter);
 app.use("/topics", topicsRouter);
+app.use("/organisations", organisationsRouter);
+app.use("/sites", siteRouter);
 
 export default app;

@@ -8,14 +8,19 @@ const Site = db_config.define("site", {
     defaultValue: DataTypes.UUIDV4,
   },
 
+  organizationId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+  },
+
   name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
 
   site_status: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: true,
+    type: DataTypes.ENUM("active", "inactive"),
+    defaultValue: "active",
   },
 });
 

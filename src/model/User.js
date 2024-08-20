@@ -8,12 +8,14 @@ const User = db_config.define("user", {
     defaultValue: DataTypes.UUIDV4,
   },
 
-  siteId: {
+  organizationId: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: function () {
+      return this.role === "system";
+    },
   },
 
-  username: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -21,6 +23,7 @@ const User = db_config.define("user", {
   email: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
 
   password: {
