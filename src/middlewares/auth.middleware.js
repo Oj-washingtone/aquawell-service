@@ -79,7 +79,7 @@ export function verifyRoleSystem(req, res, next) {
   }
 }
 
-export async function authorizeSiteCreation(req, res, next) {
+export async function authorizeOrganisationAdminFunctions(req, res, next) {
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
@@ -90,7 +90,10 @@ export async function authorizeSiteCreation(req, res, next) {
     const decoded = tokenProvider.verifyToken(token);
     const userId = decoded.id;
     const userRole = decoded.role;
-    const organizationId = req.body.organizationId;
+    const organizationId =
+      req.body.organizationId ||
+      req.params.organizationId ||
+      req.query.organizationId;
 
     if (!organizationId) {
       return res.status(400).json({ message: "Organization ID is required" });
@@ -111,11 +114,47 @@ export async function authorizeSiteCreation(req, res, next) {
 
     // Check if the user has an allowed role
     if (userRole !== "system" && !["super_admin", "admin"].includes(userRole)) {
-      return res
-        .status(403)
-        .json({
-          message: "User does not have the required rights to create a site",
-        });
+      return res.status(403).json({
+        message: "User does not have the required rights to create a site",
+      });
+    }
+
+    // User is authorized
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+}
+
+export async function authorizeOrganisationMember(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    const decoded = tokenProvider.verifyToken(token);
+    const userId = decoded.id;
+    const userRole = decoded.role;
+    const organizationId =
+      req.body.organizationId ||
+      req.params.organizationId ||
+      req.query.organizationId;
+
+    if (!organizationId) {
+      return res.status(400).json({ message: "Organization ID is required" });
+    }
+
+    if (!validate(organizationId)) {
+      return res.status(400).json({ message: "Invalid organization ID" });
+    }
+
+    // Check if the user is part of the organization
+    const user = await User.findOne({ where: { id: userId, organizationId } });
+
+    if (!user) {
+      return res.status(403).json({ message: "Forbidden" });
     }
 
     // User is authorized

@@ -8,7 +8,7 @@ const App = db_config.define("apps", {
     defaultValue: DataTypes.UUIDV4,
   },
 
-  siteId: {
+  organizationId: {
     type: DataTypes.UUID,
     allowNull: false,
   },
@@ -19,8 +19,9 @@ const App = db_config.define("apps", {
   },
 
   status: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: true,
+    type: DataTypes.ENUM("active", "inactive"),
+    defaultValue: "active",
+    allowNull: false,
   },
 
   apiKey: {

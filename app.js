@@ -7,9 +7,9 @@ import db_config from "./configs/db.js";
 
 // routes
 import authRouter from "./src/routes/auth.router.js";
-import topicsRouter from "./src/routes/topic.route.js";
+import topicsRouter from "./src/routes/topic.router.js";
 import organisationsRouter from "./src/routes/organisations.router.js";
-import siteRouter from "./src/routes/site.route.js";
+import appsRouter from "./src/routes/apps.router.js";
 
 const app = express();
 
@@ -42,6 +42,6 @@ const mqttGateway = new MqttGateway();
 app.use("/auth", authRouter);
 app.use("/topics", topicsRouter);
 app.use("/organisations", organisationsRouter);
-app.use("/sites", siteRouter);
+app.use("/apps", appsRouter);
 
 export default app;
