@@ -25,8 +25,14 @@ User.beforeCreate(async (user, options) => {
   user.password = hashedPassword;
 });
 
-// create a system user
+App.beforeCreate(async (app, options) => {
+  const apiKey = await bcrypt.hash(app.apiKey, 10);
+  const appSecret = await bcrypt.hash(app.appSecret, 10);
+  app.apiKey = apiKey;
+  app.appSecret = appSecret;
+});
 
+// create a system user
 async function createSystemUser() {
   try {
     const userCount = await User.count();
@@ -37,7 +43,6 @@ async function createSystemUser() {
         password: process.env.SYSTEM_USER_PASSWORD,
         role: "system",
       });
-      console.log("System user created:", systemUser.email);
     }
   } catch (err) {
     console.log("Error creating system user:", err);

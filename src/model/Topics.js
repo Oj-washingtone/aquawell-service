@@ -8,7 +8,7 @@ const Topics = db_config.define("topics", {
     defaultValue: DataTypes.UUIDV4,
   },
 
-  siteId: {
+  appId: {
     type: DataTypes.UUID,
     allowNull: false,
   },
@@ -18,8 +18,12 @@ const Topics = db_config.define("topics", {
     allowNull: false,
   },
 
+  type: {
+    type: DataTypes.ENUM("sub", "pub"),
+  },
+
   role: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false,
   },
 });
