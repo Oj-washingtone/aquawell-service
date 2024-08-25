@@ -69,3 +69,36 @@ export async function createApp(req, res) {
     });
   }
 }
+
+export async function getAppsByOrganization(req, res) {
+  const { organizationId } = req.params;
+
+  if (!validate(organizationId)) {
+    return res.status(400).json({
+      message: "Invalid organization id",
+    });
+  }
+
+  try {
+    const apps = await App.findAll({
+      where: { organizationId },
+    });
+
+    const userRole = req.user.role;
+
+    // If the user is a system user, omit apiKey and appSecret
+    const response = apps.map((app) => {
+      if (userRole === "system") {
+        const { apiKey, appSecret, ...safeApp } = app.dataValues;
+        return safeApp;
+      }
+      return app;
+    });
+
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+}

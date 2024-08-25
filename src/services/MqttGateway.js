@@ -5,133 +5,107 @@ config();
 
 class MqttGateway {
   constructor() {
-    this.messageQueue = [];
-    this.connected = false;
-    this.broker = process.env.MQTT_BROKER;
-    this.options = {
-      username: process.env.MQTT_USERNAME,
-      password: process.env.MQTT_PASSWORD,
-      reconnectPeriod: 1000, // Reconnect every 1 second
-      connectTimeout: 30 * 1000, // Connection timeout after 30 seconds
-    };
+    if (!MqttGateway.instance) {
+      this.client = null;
+      this.connected = false;
+      this.broker = process.env.MQTT_BROKER;
+      this.options = {
+        username: process.env.MQTT_USERNAME,
+        password: process.env.MQTT_PASSWORD,
+        reconnectPeriod: 1000, // Reconnect every 1 second
+        connectTimeout: 30 * 1000, // Connection timeout after 30 seconds
+      };
 
-    this.connect();
+      this.connect(); // Establish connection when the app starts
+      MqttGateway.instance = this;
+    }
+
+    return MqttGateway.instance;
   }
 
   connect() {
-    this.client = mqtt.connect(this.broker, this.options);
+    if (!this.client) {
+      this.client = mqtt.connect(this.broker, this.options);
 
-    this.client.on("connect", () => {
-      console.log("Connected to MQTT broker");
-      this.connected = true;
-    });
+      this.client.on("connect", () => {
+        console.log("Connected to MQTT broker");
+      });
 
-    this.client.on("error", (error) => {
-      console.error("MQTT connection error:", error);
-      this.connected = false;
-    });
+      this.client.on("error", (error) => {
+        console.error("MQTT connection error:", error);
+      });
 
-    this.client.on("close", () => {
-      console.log("MQTT connection closed");
-      this.connected = false;
-    });
+      this.client.on("close", () => {
+        console.log("MQTT connection closed");
+      });
 
-    this.client.on("reconnect", () => {
-      console.log("Reconnecting to MQTT broker");
-    });
+      this.client.on("reconnect", () => {
+        console.log("Reconnecting to MQTT broker");
+      });
 
-    this.client.on("offline", () => {
-      console.log("MQTT client is offline");
-      this.connected = false;
+      this.client.on("offline", () => {
+        console.log("MQTT client is offline");
+      });
+    }
+  }
+
+  async ensureConnection() {
+    return new Promise((resolve) => {
+      if (this.client && this.client.connected) {
+        resolve();
+      } else {
+        this.client.once("connect", () => {
+          resolve();
+        });
+        this.connect(); // Reattempt connection
+      }
     });
   }
 
-  messageReceived(topic, message) {
-    this.client.on("message", (topic, message) => {
-      console.log("Received message:", topic, message.toString());
-    });
+  async subscribeToTopics(topics) {
+    try {
+      await this.ensureConnection(); // Ensure connected before subscribing
+
+      await new Promise((resolve, reject) => {
+        this.client.subscribe(topics, { qos: 1 }, (err) => {
+          if (err) {
+            console.error(`Error subscribing to topics ${topics}:`, err);
+            return reject(err);
+          }
+          console.log(`Subscribed to topics ${topics}`);
+          resolve();
+        });
+      });
+    } catch (error) {
+      console.error("Subscription error:", error);
+      throw error;
+    }
   }
 
   async publish(topics, message) {
-    const timeout = 5000;
-    let valveActivated = false;
-    let valveDone = false;
-    let deviceStatus = [];
-    let timeoutId;
-    let totalAtempts = 3;
-    let response;
+    try {
+      await this.ensureConnection(); // Ensure connected before publishing
 
-    for (let i = 0; i < topics.length; i++) {
-      valveActivated = false;
-
-      this.client.publish(topics[i].send, message, { qos: 1 }, (err) => {
-        if (err) {
-          console.error("Error publishing message:", err);
-        }
-      });
-
-      // promise to resolve only on message received
-      await new Promise((resolve) => {
-        // subscribe to response topic
-        this.client.subscribe(topics[i].response, { qos: 1 }, (err) => {
+      for (let topic of topics) {
+        this.client.publish(topic, message, { qos: 1 }, (err) => {
           if (err) {
-            console.error("Error subscribing to topic:", err);
-            return;
+            console.error("Error publishing message:", err);
           }
         });
-
-        // start timeout
-        timeoutId = setTimeout(() => {
-          resolve();
-        }, timeout);
-
-        this.client.on("message", (topic, message) => {
-          if (message) {
-            if (message.toString() === "success") {
-              valveActivated = true;
-            }
-            clearTimeout(timeoutId);
-            resolve();
-          }
-        });
-      });
-
-      // If valveActivated is still false, move to the next topic
-      if (!valveActivated) {
-        console.log(
-          `${topics[i].send} could not be used, checking for next valve...`
-        );
-        if (i === topics.length - 1) {
-          console.log(
-            `All the available ${topics.length} valves failed to open, please check the valves and try again.`
-          );
-          response = {
-            activeValve: "none",
-            status: false,
-            message: `All the  ${topics.length} available valves could be busy, please check and try again.`,
-          };
-          break;
-        }
-
-        this.client.unsubscribe(topics[i].response);
-        this.client.unsubscribe(topics[i].send);
-
-        continue;
-      } else {
-        response = {
-          activeValve: topics[i].send,
-          status: true,
-          message: `Valve ${topics[i].send} is activated, water flowing`,
-        };
-        console.log(`using ${topics[i].send}, valve activated, water flowing`);
-        this.client.unsubscribe(topics[i].response);
-
-        break;
       }
+    } catch (error) {
+      console.error("Publish error:", error);
+      throw error;
     }
+  }
 
-    return response;
+  // listen to messages
+  onMessage(callback) {
+    this.client.on("message", callback);
   }
 }
 
-export default MqttGateway;
+const instance = new MqttGateway();
+Object.freeze(instance);
+
+export default instance;

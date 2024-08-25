@@ -4,6 +4,8 @@ import cors from "cors";
 import MqttGateway from "./src/services/MqttGateway.js";
 import syncModels from "./src/model/setup.js";
 import db_config from "./configs/db.js";
+import AutoMQTTSubscribe from "./src/utils/AutoMQTTSubscribe.js";
+import handleMqttMessages from "./src/services/HandleMqttMessages.js";
 
 // routes
 import authRouter from "./src/routes/auth.router.js";
@@ -27,6 +29,8 @@ db_config
   .then(() => {
     console.log("Database connection has been established successfully.");
     syncModels();
+    AutoMQTTSubscribe();
+
     app.listen(app.get("port"), () => {
       console.log("Aquawell service running on port", app.get("port"));
     });
@@ -35,8 +39,8 @@ db_config
     console.error("Unable to connect to the database:", error);
   });
 
-// connect to mqtt
-const mqttGateway = new MqttGateway();
+// Handle MQTT messages
+handleMqttMessages();
 
 // routes
 app.use("/auth", authRouter);

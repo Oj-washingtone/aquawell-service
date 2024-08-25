@@ -21,11 +21,6 @@ const Topics = db_config.define("topics", {
   type: {
     type: DataTypes.ENUM("sub", "pub"),
   },
-
-  role: {
-    type: DataTypes.TEXT,
-    allowNull: false,
-  },
 });
 
 export default Topics;

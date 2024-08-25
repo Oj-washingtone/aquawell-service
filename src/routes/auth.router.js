@@ -4,12 +4,13 @@ import {
   authenticateApp,
   routeProtection,
   verifyRoleSystem,
+  isPrivileged,
 } from "../middlewares/auth.middleware.js";
 
 const authRouter = express.Router();
 
 authRouter.post("/login", loginUser);
 
-authRouter.post("/register", routeProtection, verifyRoleSystem, registerUser);
+authRouter.post("/register", routeProtection, isPrivileged, registerUser);
 
 export default authRouter;

@@ -79,6 +79,7 @@ export function verifyRoleSystem(req, res, next) {
   }
 }
 
+// organization admin functions
 export async function authorizeOrganisationAdminFunctions(req, res, next) {
   const token = req.headers.authorization?.split(" ")[1];
 
@@ -129,6 +130,45 @@ export async function authorizeOrganisationAdminFunctions(req, res, next) {
 export async function authorizeOrganisationMember(req, res, next) {
   const token = req.headers.authorization?.split(" ")[1];
 
+  try {
+    const decoded = tokenProvider.verifyToken(token);
+    const userId = decoded.id;
+    const userRole = decoded.role;
+    const organizationId =
+      req.body.organizationId ||
+      req.params.organizationId ||
+      req.query.organizationId;
+
+    // if system userr
+    if (userRole === "system") {
+      return next();
+    }
+
+    if (!organizationId || !validate(organizationId)) {
+      return res
+        .status(400)
+        .json({ message: "Valid organization ID is required" });
+    }
+
+    const user = await User.findOne({ where: { id: userId, organizationId } });
+
+    if (!user) {
+      return res
+        .status(403)
+        .json({ message: "User does not belong to this organization" });
+    }
+
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+}
+
+// PRIVILAGED USER
+
+export async function isPrivileged(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
@@ -142,19 +182,31 @@ export async function authorizeOrganisationMember(req, res, next) {
       req.params.organizationId ||
       req.query.organizationId;
 
-    if (!organizationId) {
-      return res.status(400).json({ message: "Organization ID is required" });
+    // If the user is a system user, allow them to proceed
+    if (userRole === "system") {
+      return next();
     }
 
-    if (!validate(organizationId)) {
-      return res.status(400).json({ message: "Invalid organization ID" });
+    // If the user is not a system user, validate the organization they belong to
+    if (!organizationId || !validate(organizationId)) {
+      return res
+        .status(400)
+        .json({ message: "Valid organization ID is required" });
     }
 
-    // Check if the user is part of the organization
     const user = await User.findOne({ where: { id: userId, organizationId } });
 
     if (!user) {
-      return res.status(403).json({ message: "Forbidden" });
+      return res
+        .status(403)
+        .json({ message: "User does not belong to this organization" });
+    }
+
+    // Check if the user has the required role in the organisation (admin or super_admin)
+    if (!["super_admin", "admin"].includes(userRole)) {
+      return res.status(403).json({
+        message: "User does not have the required privileges",
+      });
     }
 
     // User is authorized
