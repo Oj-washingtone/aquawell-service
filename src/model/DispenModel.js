@@ -30,7 +30,7 @@ const DispenModel = db_config.define("dispensers", {
   },
 
   status: {
-    type: DataTypes.ENUM("completed", "failed", "ongoing"),
+    type: DataTypes.ENUM("success", "failed", "interupted"),
     allowNull: false,
   },
 });
