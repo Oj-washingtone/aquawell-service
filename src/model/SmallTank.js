@@ -19,7 +19,7 @@ const SmallTank = db_config.define("small_tank", {
     allowNull: false,
   },
 
-  currentVolume: {
+  level: {
     type: DataTypes.FLOAT,
     allowNull: false,
   },

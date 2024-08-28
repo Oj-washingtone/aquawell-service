@@ -15,10 +15,11 @@ const MainTank = db_config.define("main_tank", {
 
   capacity: {
     type: DataTypes.FLOAT,
+    defaultValue: 500,
     allowNull: false,
   },
 
-  currentVolume: {
+  level: {
     type: DataTypes.FLOAT,
     allowNull: false,
   },
