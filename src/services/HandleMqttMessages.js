@@ -8,6 +8,18 @@ export default function handleMqttMessages() {
     const messageObject = JSON.parse(message.toString());
 
     try {
+      // validate message type
+      const { isValid, Model } = validateAndLoadModel(messageObject);
+
+      if (!isValid) {
+        console.log(
+          "Invalid message type '",
+          messageObject.type,
+          "' discarding message"
+        );
+        return; // Discard the message
+      }
+
       // get appId by topic
       const app = await Topics.findOne({
         where: { topic },
@@ -20,6 +32,14 @@ export default function handleMqttMessages() {
       }
 
       console.log("App found for topic:", topic, app.appId);
+
+      const newRecord = new Model({
+        ...messageObject,
+        appId: app.appId,
+      });
+      await newRecord.save();
+
+      console.log("Message processed and saved:", newRecord);
     } catch (error) {
       console.error("Error handling message:", error);
     }
@@ -27,10 +47,13 @@ export default function handleMqttMessages() {
   });
 }
 
-function validateMessageTypes(messageObject) {
-  if (messageObject.type && allowedMessageTypes.includes(messageObject.type)) {
-    return true;
+export function validateAndLoadModel(messageObject) {
+  const { type } = messageObject;
+
+  if (allowedMessageTypes[type]) {
+    const Model = allowedMessageTypes[type];
+    return { isValid: true, Model };
   }
 
-  return false;
+  return { isValid: false, Model: null };
 }

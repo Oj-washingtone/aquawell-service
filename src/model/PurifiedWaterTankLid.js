@@ -14,18 +14,8 @@ const PurifiedWaterTankLid = db_config.define("purified_water_tank_lid", {
   },
 
   status: {
-    type: DataTypes.ENUM("open", "close"),
+    type: DataTypes.ENUM("open", "closed"),
     allowNull: false,
-  },
-
-  openedAt: {
-    type: DataTypes.DATE,
-    allowNull: true,
-  },
-
-  closedAt: {
-    type: DataTypes.DATE,
-    allowNull: true,
   },
 });
 
