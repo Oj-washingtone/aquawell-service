@@ -6,6 +6,7 @@ import {
 import bcrypt from "bcrypt";
 import jwtProvider from "../services/jwtProvider.js";
 import { validate } from "uuid";
+import Organization from "../model/Organization.js";
 
 export async function registerUser(req, res) {
   const { error } = registerUserValidator(req.body);
@@ -23,6 +24,19 @@ export async function registerUser(req, res) {
     if (!validate(organizationId)) {
       return res.status(400).json({
         message: "Invalid organization id",
+      });
+    }
+  }
+
+  // check if organization
+  if (organizationId) {
+    const organization = await Organization.findOne({
+      where: { id: organizationId },
+    });
+
+    if (!organization) {
+      return res.status(404).json({
+        message: "No such organization Organization",
       });
     }
   }

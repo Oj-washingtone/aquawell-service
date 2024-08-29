@@ -43,16 +43,8 @@ export default function handleMqttMessages() {
         });
         await newRecord.save();
 
-        console.log("Message processed and saved:", newRecord);
+        console.log("Message processed and saved");
       }
-
-      // const newRecord = new Model({
-      //   ...messageObject,
-      //   appId: app.appId,
-      // });
-      // await newRecord.save();
-
-      // console.log("Message processed and saved:", newRecord);
     } catch (error) {
       console.error("Error handling message:", error);
     }
@@ -71,20 +63,17 @@ export function validateAndLoadModel(messageObject) {
   return { isValid: false, Model: null };
 }
 
-// Function to handle the specific case of the lid status
 async function handleLidStatus(appId, messageObject) {
   const { status } = messageObject;
 
-  // Find the most recent lid record with status "open" for this app
   const recentLidRecord = await allowedMessageTypes[
     "purified_water_tank_lid"
   ].findOne({
-    where: { appId, status: "open" },
+    where: { status: "open", appId },
     order: [["openedAt", "DESC"]],
   });
 
   if (status === "open") {
-    // If the status is "open", create a new record
     const newLidRecord = new allowedMessageTypes["purified_water_tank_lid"]({
       ...messageObject,
       appId,
@@ -92,20 +81,12 @@ async function handleLidStatus(appId, messageObject) {
       closedAt: null,
     });
     await newLidRecord.save();
-
-    console.log("Lid opened, new record created:", newLidRecord);
-  } else if (status === "close" && recentLidRecord) {
-    // If the status is "close", update the recent open record with closedAt and duration
+  } else if (status === "closed" && recentLidRecord) {
     const closedAt = new Date();
-    const duration = Math.floor((closedAt - recentLidRecord.openedAt) / 1000); // Duration in seconds
-
     await recentLidRecord.update({
-      status: "close",
+      status: "closed",
       closedAt,
-      duration,
     });
-
-    console.log("Lid closed, record updated:", recentLidRecord);
   } else {
     console.log("No open record found to update with close status.");
   }

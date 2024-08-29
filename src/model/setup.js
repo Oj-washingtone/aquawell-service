@@ -25,13 +25,6 @@ User.beforeCreate(async (user, options) => {
   user.password = hashedPassword;
 });
 
-App.beforeCreate(async (app, options) => {
-  const apiKey = await bcrypt.hash(app.apiKey, 10);
-  const appSecret = await bcrypt.hash(app.appSecret, 10);
-  app.apiKey = apiKey;
-  app.appSecret = appSecret;
-});
-
 // create a system user
 async function createSystemUser() {
   try {

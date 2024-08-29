@@ -12,6 +12,7 @@ import authRouter from "./src/routes/auth.router.js";
 import topicsRouter from "./src/routes/topic.router.js";
 import organisationsRouter from "./src/routes/organisations.router.js";
 import appsRouter from "./src/routes/apps.router.js";
+import dispenserRouter from "./src/routes/dispenser.route.js";
 
 const app = express();
 
@@ -47,5 +48,6 @@ app.use("/auth", authRouter);
 app.use("/topics", topicsRouter);
 app.use("/organisations", organisationsRouter);
 app.use("/apps", appsRouter);
+app.use("/dispenser", dispenserRouter);
 
 export default app;
