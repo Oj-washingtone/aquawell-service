@@ -21,9 +21,6 @@ jobs:
     - name: List SSH keys
       run: ssh-add -l
 
-    - name: Set permissions for SSH key
-      run: chmod 600 ~/.ssh/id_rsa
-
     - name: Deploy to Contabo VM
       run: |
         ssh -vvv -o StrictHostKeyChecking=no washingtone@144.91.79.8 "mkdir -p ~/opt/make/aquawell-api-service"
