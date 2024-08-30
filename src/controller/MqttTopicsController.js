@@ -14,13 +14,7 @@ export async function createTopic(req, res) {
     });
   }
 
-  const { organizationId, appId, topic, type } = req.body;
-
-  if (!validate(organizationId)) {
-    return res.status(400).json({
-      message: "Invalid organization id",
-    });
-  }
+  const { appId, topic, type } = req.body;
 
   if (!validate(appId)) {
     return res.status(400).json({
@@ -28,17 +22,8 @@ export async function createTopic(req, res) {
     });
   }
 
-  // organization exists ?
-  const organization = await Organization.findByPk(organizationId);
-
-  if (!organization) {
-    return res.status(404).json({
-      message: "No such organization",
-    });
-  }
-
   // app exists ?
-  const app = await App.findOne({ where: { id: appId, organizationId } });
+  const app = await App.findOne({ where: { id: appId } });
 
   if (!app) {
     return res.status(404).json({
@@ -64,7 +49,6 @@ export async function createTopic(req, res) {
 
   try {
     const newTopic = await Topics.create({
-      organizationId,
       appId,
       topic,
       type,

@@ -1,5 +1,6 @@
 import mqtt from "mqtt";
 import { config } from "dotenv";
+import subscribeToAllSubTopics from "../utils/AutoMQTTSubscribe.js";
 
 config();
 
@@ -14,6 +15,8 @@ class MqttGateway {
         password: process.env.MQTT_PASSWORD,
         reconnectPeriod: 1000, // Reconnect every 1 second
         connectTimeout: 30 * 1000, // Connection timeout after 30 seconds
+        clean: false,
+        clientId: "akua_" + Math.random().toString(16).substr(2, 8),
       };
 
       this.connect(); // Establish connection when the app starts

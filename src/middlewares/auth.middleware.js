@@ -27,8 +27,8 @@ export function routeProtection(req, res, next) {
 
 // authenticate api keys
 export function authenticateApp(req, res, next) {
-  const apiKey = req.headers["x-api-key"];
-  const appSecret = req.headers["x-app-secret"];
+  const apiKey = req.headers["api-key"];
+  const appSecret = req.headers["app-secret"];
 
   if (!apiKey || !appSecret) {
     return res.status(401).json({
@@ -49,7 +49,7 @@ export function authenticateApp(req, res, next) {
         });
       }
 
-      req.app = app;
+      req.authenticatedApp = app.id;
       next();
     })
     .catch((error) => {
