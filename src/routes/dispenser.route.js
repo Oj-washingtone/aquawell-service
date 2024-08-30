@@ -2,17 +2,18 @@ import express from "express";
 import {
   routeProtection,
   authorizeOrganisationMember,
+  authenticateApp,
 } from "../middlewares/auth.middleware.js";
+import { dispenseDisptch } from "../controller/DispenserController.js";
 
 const dispenserRouter = express.Router();
 
-dispenserRouter.get(
+dispenserRouter.post(
   "/",
   routeProtection,
   authorizeOrganisationMember,
-  (req, res) => {
-    res.send("Dispenser route");
-  }
+  authenticateApp,
+  dispenseDisptch
 );
 
 export default dispenserRouter;

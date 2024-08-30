@@ -20,6 +20,7 @@ const app = express();
 app.set("port", process.env.PORT || 4000);
 
 // middlewares
+app.set("trust proxy", true);
 app.use(morgan("combined"));
 app.use(cors());
 app.use(express.json());
@@ -48,6 +49,6 @@ app.use("/auth", authRouter);
 app.use("/topics", topicsRouter);
 app.use("/organisations", organisationsRouter);
 app.use("/apps", appsRouter);
-app.use("/dispenser", dispenserRouter);
+app.use("/dispense", dispenserRouter);
 
 export default app;

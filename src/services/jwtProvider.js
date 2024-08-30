@@ -8,7 +8,7 @@ class TokenProvider {
     this.secretKey = secretKey;
   }
 
-  setToken(payload, expiresIn = "1h") {
+  setToken(payload, expiresIn = "1d") {
     return jwt.sign(payload, this.secretKey, { expiresIn });
   }
 

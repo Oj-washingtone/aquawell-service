@@ -49,7 +49,6 @@ export async function createTopic(req, res) {
 
   try {
     const newTopic = await Topics.create({
-      organizationId,
       appId,
       topic,
       type,
