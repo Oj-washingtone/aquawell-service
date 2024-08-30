@@ -1,0 +1,41 @@
+name: Deploy Server 
+
+on:
+  push:
+    branches:
+      - main  # Change this to your target branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH agent
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.VM_SSH_P_KEY }}
+
+    - name: Deploy to Contabo VM
+      run: |
+        ssh -o StrictHostKeyChecking=no root@144.91.79.8 "mkdir -p ~/opt/make/aquawell-api-service"
+        scp -o StrictHostKeyChecking=no -r ./* root@144.91.79.8:~/opt/make/aquawell-api-service
+        ssh -o StrictHostKeyChecking=no root@144.91.79.8 "
+          export PORT=${{ secrets.PORT }} &&
+          export DB_NAME=${{ secrets.DB_NAME }} &&
+          export DB_USER=${{ secrets.DB_USER }} &&
+          export DB_PASS=${{ secrets.DB_PASS }} &&
+          export DB_HOST=${{ secrets.DB_HOST }} &&
+          export AUTH_SECRET=${{ secrets.AUTH_SECRET }} &&
+          export MQTT_BROKER=${{ secrets.MQTT_BROKER }} &&
+          export MQTT_USERNAME=${{ secrets.MQTT_USERNAME }} &&
+          export MQTT_PASSWORD=${{ secrets.MQTT_PASSWORD }} &&
+          export SYSTEM_USER_NAME=${{ secrets.SYSTEM_USER_NAME }} &&
+          export SYSTEM_USER_EMAIL=${{ secrets.SYSTEM_USER_EMAIL }} &&
+          export SYSTEM_USER_PASSWORD=${{ secrets.SYSTEM_USER_PASSWORD }} &&
+          cd ~/opt/make/tipapp-service && ./start.sh"
+      env:
+        VM_USER: root
+        VM_IP: 144.91.79.8
