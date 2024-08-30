@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define your image and container names
-IMAGE_NAME="tipapp-api"
-CONTAINER_NAME="tipapp-api"
+IMAGE_NAME="aquawell-api-service"
+CONTAINER_NAME="aquawell-api-service"
 PORT=5000
 
 #start by pulling chages 
