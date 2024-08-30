@@ -13,13 +13,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: List SSH keys
-      run: ssh-add -l
-
     - name: Set up SSH agent
       uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.VM_SSH_P_KEY }}
+
+    - name: List SSH keys
+      run: ssh-add -l
+
 
     - name: Deploy to Contabo VM
       run: |
