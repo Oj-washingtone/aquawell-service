@@ -21,6 +21,8 @@ jobs:
     - name: List SSH keys
       run: ssh-add -l
 
+    - name: Set permissions for SSH key
+      run: chmod 600 ~/.ssh/id_rsa
 
     - name: Deploy to Contabo VM
       run: |
