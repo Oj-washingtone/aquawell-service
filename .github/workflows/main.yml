@@ -13,6 +13,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: List SSH keys
+      run: ssh-add -l
+
     - name: Set up SSH agent
       uses: webfactory/ssh-agent@v0.5.3
       with:
