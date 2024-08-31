@@ -35,7 +35,7 @@ docker run --restart=always --network="host" -d -p $PORT:$PORT \
   -e MQTT_PASSWORD="$MQTT_PASSWORD" \
   -e SYSTEM_USER_NAME="$SYSTEM_USER_NAME" \
   -e SYSTEM_USER_EMAIL="$SYSTEM_USER_EMAIL" \
-  -e SYSTEM_USER_PASSWORD="$SYSTEM_EMAIL" \
+   -e SYSTEM_USER_EMAIL="$SYSTEM_USER_PASSWORD" \
   $IMAGE_NAME
 
 echo "Application is running at port $PORT"
