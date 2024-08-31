@@ -2,6 +2,7 @@ import { dispenserValidator } from "../utils/validators/dispenser.validator.js";
 import Topics from "../model/Topics.js";
 import { Op } from "sequelize";
 import MqttGateway from "../services/MqttGateway.js";
+import DispenModel from "../model/DispenModel.js";
 
 export async function dispenseDisptch(req, res) {
   const { error } = dispenserValidator(req.body);
@@ -42,6 +43,24 @@ export async function dispenseDisptch(req, res) {
     res.status(200).json({
       message: "Dispatch successful",
     });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+}
+
+export async function dispenseDisptchHistory(req, res) {
+  const appId = req.authenticatedApp;
+
+  try {
+    const dispenseHistory = await DispenModel.findAll({
+      where: {
+        appId,
+      },
+    });
+
+    return res.status(200).json(dispenseHistory);
   } catch (error) {
     return res.status(500).json({
       message: error.message,

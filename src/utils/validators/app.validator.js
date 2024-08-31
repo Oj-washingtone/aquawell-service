@@ -8,3 +8,12 @@ export const createAppValidator = (data) => {
 
   return schema.validate(data);
 };
+
+export const refreshAppKeyValidator = (data) => {
+  const schema = Joi.object({
+    appId: Joi.string().required(),
+    organizationId: Joi.string().required(),
+  });
+
+  return schema.validate(data);
+};

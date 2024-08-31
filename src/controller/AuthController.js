@@ -99,6 +99,7 @@ export async function loginUser(req, res) {
       id: user.id,
       email: user.email,
       role: user.role,
+      organizationId: user.organizationId,
     });
 
     delete user.dataValues.password;

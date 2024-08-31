@@ -32,7 +32,7 @@ export function authenticateApp(req, res, next) {
 
   if (!apiKey || !appSecret) {
     return res.status(401).json({
-      message: "Unauthorized",
+      message: "Unauthorized {apiKey && appSecret}",
     });
   }
 
@@ -116,7 +116,8 @@ export async function authorizeOrganisationAdminFunctions(req, res, next) {
     // Check if the user has an allowed role
     if (userRole !== "system" && !["super_admin", "admin"].includes(userRole)) {
       return res.status(403).json({
-        message: "User does not have the required rights to create a site",
+        message:
+          "User does not have the required rights to manage organization",
       });
     }
 
@@ -134,10 +135,12 @@ export async function authorizeOrganisationMember(req, res, next) {
     const decoded = tokenProvider.verifyToken(token);
     const userId = decoded.id;
     const userRole = decoded.role;
+
     const organizationId =
       req.body.organizationId ||
       req.params.organizationId ||
-      req.query.organizationId;
+      req.query.organizationId ||
+      decoded.organizationId;
 
     // if system userr
     if (userRole === "system") {
@@ -157,6 +160,9 @@ export async function authorizeOrganisationMember(req, res, next) {
         .status(403)
         .json({ message: "User does not belong to this organization" });
     }
+
+    // continue with organization id
+    req.organizationId = organizationId;
 
     next();
   } catch (error) {

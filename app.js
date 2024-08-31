@@ -13,6 +13,7 @@ import topicsRouter from "./src/routes/topic.router.js";
 import organisationsRouter from "./src/routes/organisations.router.js";
 import appsRouter from "./src/routes/apps.router.js";
 import dispenserRouter from "./src/routes/dispenser.route.js";
+import tanksRouter from "./src/routes/tanks.router.js";
 
 const app = express();
 
@@ -50,5 +51,6 @@ app.use("/topics", topicsRouter);
 app.use("/organisations", organisationsRouter);
 app.use("/apps", appsRouter);
 app.use("/dispense", dispenserRouter);
+app.use("/tanks", tanksRouter);
 
 export default app;
