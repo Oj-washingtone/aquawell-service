@@ -1,6 +1,9 @@
 import App from "../model/Apps.js";
 import { validate } from "uuid";
-import { createAppValidator } from "../utils/validators/app.validator.js";
+import {
+  createAppValidator,
+  refreshAppKeyValidator,
+} from "../utils/validators/app.validator.js";
 import Organization from "../model/Organization.js";
 import crypto from "crypto";
 
@@ -99,6 +102,60 @@ export async function getAppsByOrganization(req, res) {
   } catch (error) {
     return res.status(500).json({
       message: "Internal server error",
+    });
+  }
+}
+
+export async function refreshAppKey(req, res) {
+  const { error } = refreshAppKeyValidator(req.body);
+
+  if (error) {
+    return res.status(400).json({
+      message: error.details[0].message,
+    });
+  }
+
+  const { appId, organizationId } = req.body;
+
+  if (!validate(appId)) {
+    return res.status(400).json({
+      message: "Invalid app id",
+    });
+  }
+
+  try {
+    const app = await App.findOne({
+      where: { id: appId, organizationId },
+    });
+
+    if (!app) {
+      return res.status(404).json({
+        message: "No such app",
+      });
+    }
+
+    // Generate new API key and app secret
+    const apiKey = crypto
+      .randomBytes(16)
+      .toString("base64")
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .slice(0, 32);
+
+    const appSecret = crypto
+      .randomBytes(32)
+      .toString("base64")
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .slice(0, 64);
+
+    app.apiKey = apiKey;
+    app.appSecret = appSecret;
+
+    await app.save();
+
+    return res.status(200).json(app);
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
     });
   }
 }

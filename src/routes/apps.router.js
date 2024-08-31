@@ -9,6 +9,7 @@ import {
 import {
   createApp,
   getAppsByOrganization,
+  refreshAppKey,
 } from "../controller/AppsController.js";
 
 const appsRouter = express.Router();
@@ -21,6 +22,14 @@ appsRouter.get(
   routeProtection,
   authorizeOrganisationMember,
   getAppsByOrganization
+);
+
+// refresh api key and app secret
+appsRouter.post(
+  "/refresh",
+  routeProtection,
+  authorizeOrganisationAdminFunctions,
+  refreshAppKey
 );
 
 export default appsRouter;
