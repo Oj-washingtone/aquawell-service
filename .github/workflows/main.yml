@@ -35,7 +35,7 @@ jobs:
           export SYSTEM_USER_NAME=${{ secrets.SYSTEM_USER_NAME }} &&
           export SYSTEM_USER_EMAIL=${{ secrets.SYSTEM_USER_EMAIL }} &&
           export SYSTEM_USER_PASSWORD=${{ secrets.SYSTEM_USER_PASSWORD }} &&
-          cd ~/opt/make/tipapp-service && ./start.sh"
+          cd ~/opt/make/aquawell-api-service && ./start.sh"
       env:
         VM_USER: washingtone
         VM_IP: 144.91.79.8
