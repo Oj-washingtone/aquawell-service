@@ -21,24 +21,24 @@ jobs:
     - name: List SSH keys
       run: ssh-add -l
 
-    - name: Deploy to Contabo VM
-      run: |
-        ssh -vvv -o StrictHostKeyChecking=no washingtone@144.91.79.8 "mkdir -p ~/opt/make/aquawell-api-service"
-        scp -vvv -o StrictHostKeyChecking=no -r ./* washingtone@144.91.79.8:~/opt/make/aquawell-api-service
-        ssh -vvv -o StrictHostKeyChecking=no washingtone@144.91.79.8 "
-          export PORT=${{ secrets.PORT }} &&
-          export DB_NAME=${{ secrets.DB_NAME }} &&
-          export DB_USER=${{ secrets.DB_USER }} &&
-          export DB_PASS=${{ secrets.DB_PASS }} &&
-          export DB_HOST=${{ secrets.DB_HOST }} &&
-          export AUTH_SECRET=${{ secrets.AUTH_SECRET }} &&
-          export MQTT_BROKER=${{ secrets.MQTT_BROKER }} &&
-          export MQTT_USERNAME=${{ secrets.MQTT_USERNAME }} &&
-          export MQTT_PASSWORD=${{ secrets.MQTT_PASSWORD }} &&
-          export SYSTEM_USER_NAME=${{ secrets.SYSTEM_USER_NAME }} &&
-          export SYSTEM_USER_EMAIL=${{ secrets.SYSTEM_USER_EMAIL }} &&
-          export SYSTEM_USER_PASSWORD=${{ secrets.SYSTEM_USER_PASSWORD }} &&
-          cd ~/opt/make/tipapp-service && ./start.sh"
-      env:
-        VM_USER: washingtone
-        VM_IP: 144.91.79.8
+    # - name: Deploy to Contabo VM
+    #   run: |
+    #     ssh -vvv -o StrictHostKeyChecking=no washingtone@144.91.79.8 "mkdir -p ~/opt/make/aquawell-api-service"
+    #     scp -vvv -o StrictHostKeyChecking=no -r ./* washingtone@144.91.79.8:~/opt/make/aquawell-api-service
+    #     ssh -vvv -o StrictHostKeyChecking=no washingtone@144.91.79.8 "
+    #       export PORT=${{ secrets.PORT }} &&
+    #       export DB_NAME=${{ secrets.DB_NAME }} &&
+    #       export DB_USER=${{ secrets.DB_USER }} &&
+    #       export DB_PASS=${{ secrets.DB_PASS }} &&
+    #       export DB_HOST=${{ secrets.DB_HOST }} &&
+    #       export AUTH_SECRET=${{ secrets.AUTH_SECRET }} &&
+    #       export MQTT_BROKER=${{ secrets.MQTT_BROKER }} &&
+    #       export MQTT_USERNAME=${{ secrets.MQTT_USERNAME }} &&
+    #       export MQTT_PASSWORD=${{ secrets.MQTT_PASSWORD }} &&
+    #       export SYSTEM_USER_NAME=${{ secrets.SYSTEM_USER_NAME }} &&
+    #       export SYSTEM_USER_EMAIL=${{ secrets.SYSTEM_USER_EMAIL }} &&
+    #       export SYSTEM_USER_PASSWORD=${{ secrets.SYSTEM_USER_PASSWORD }} &&
+    #       cd ~/opt/make/tipapp-service && ./start.sh"
+    #   env:
+    #     VM_USER: washingtone
+    #     VM_IP: 144.91.79.8
