@@ -18,9 +18,9 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.VM_PRIVATE_KEY }}
 
-    # - name: Deploy to Contabo VM
-    #   run: |
-    #     ssh -vvv -o StrictHostKeyChecking=no washingtone@144.91.79.8 "mkdir -p ~/opt/make/aquawell-api-service"
+    - name: Deploy to Contabo VM
+      run: |
+        ssh -o StrictHostKeyChecking=no washingtone@144.91.79.8 "mkdir -p ~/opt/make/aquawell-api-service"
     #     scp -vvv -o StrictHostKeyChecking=no -r ./* washingtone@144.91.79.8:~/opt/make/aquawell-api-service
     #     ssh -vvv -o StrictHostKeyChecking=no washingtone@144.91.79.8 "
     #       export PORT=${{ secrets.PORT }} &&
