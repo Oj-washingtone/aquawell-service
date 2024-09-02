@@ -30,9 +30,9 @@ organisationsRouter.get(
 
 // update organization
 organisationsRouter.put(
-  "/update/:id",
+  "/update/:organizationId",
   routeProtection,
-  authorizeOrganisationAdminFunctions,
+  verifyRoleSystem,
   updateOrganization
 );
 

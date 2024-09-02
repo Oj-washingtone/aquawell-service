@@ -43,7 +43,7 @@ export async function getOrganizations(req, res) {
 }
 
 export async function updateOrganization(req, res) {
-  const id = req.params.id;
+  const organizationId = req.params.organizationId;
   const { name, email, phone, address } = req.body;
 
   // Validate input
@@ -57,6 +57,11 @@ export async function updateOrganization(req, res) {
     return res.status(400).json({ message: error.details[0].message });
   }
 
+  // make sure at least one value is provided
+  if (!name && !email && !phone && !address) {
+    return res.status(400).json({ message: "At least one field is required" });
+  }
+
   // Filter out undefined fields
   const updateData = {};
   if (name) updateData.name = name;
@@ -64,19 +69,18 @@ export async function updateOrganization(req, res) {
   if (phone) updateData.phone = phone;
   if (address) updateData.address = address;
 
-  try {
-    const organization = await Organization.update(updateData, {
-      where: { id },
-      returning: true, // Return the updated record
-      plain: true, // Return the plain data object (no metadata)
-    });
+  // try {
+  const organization = await Organization.findByPk(organizationId);
 
-    if (!organization) {
-      return res.status(404).json({ message: "Organization not found" });
-    }
-
-    return res.status(200).json(organization);
-  } catch (error) {
-    return res.status(500).json({ message: "An error occurred", error });
+  if (!organization) {
+    return res.status(404).json({ message: "Organization not found" });
   }
+
+  await organization.update(updateData);
+
+  return res.status(200).json(organization);
+
+  // } catch (error) {
+  //   return res.status(500).json({ message: "An error occurred", error });
+  // }
 }
