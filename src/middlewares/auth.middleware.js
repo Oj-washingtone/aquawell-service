@@ -94,7 +94,8 @@ export async function authorizeOrganisationAdminFunctions(req, res, next) {
     const organizationId =
       req.body.organizationId ||
       req.params.organizationId ||
-      req.query.organizationId;
+      req.query.organizationId ||
+      decoded.organizationId;
 
     if (!organizationId) {
       return res.status(400).json({ message: "Organization ID is required" });
@@ -120,6 +121,9 @@ export async function authorizeOrganisationAdminFunctions(req, res, next) {
           "User does not have the required rights to manage organization",
       });
     }
+
+    // proceed with organization id
+    req.organizationId = organizationId;
 
     // User is authorized
     next();

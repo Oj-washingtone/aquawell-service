@@ -25,16 +25,17 @@ export async function getMainTankUsageHistory(req, res) {
 
   const { startDate, endDate } = req.query;
 
+  const adjustedEndDate = new Date(new Date(endDate).setHours(23, 59, 59, 999));
+
   try {
-    // get the main tank usage history
     const mainTankUsage = await MainTank.findAll({
       where: {
         appId,
         createdAt: {
-          [Op.between]: [startDate, endDate],
+          [Op.between]: [new Date(startDate), adjustedEndDate],
         },
       },
-
+      attributes: ["id", "capacity", "level", "updatedAt"],
       order: [["createdAt", "DESC"]],
     });
 
@@ -65,6 +66,7 @@ export async function getSmallTankUsageHistory(req, res) {
   }
 
   const { startDate, endDate } = req.query;
+  const adjustedEndDate = new Date(new Date(endDate).setHours(23, 59, 59, 999));
 
   try {
     // get the small tank usage history
@@ -72,10 +74,10 @@ export async function getSmallTankUsageHistory(req, res) {
       where: {
         appId,
         createdAt: {
-          [Op.between]: [startDate, endDate],
+          [Op.between]: [new Date(startDate), adjustedEndDate],
         },
       },
-
+      attributes: ["id", "capacity", "level", "updatedAt"],
       order: [["createdAt", "DESC"]],
     });
 
@@ -99,6 +101,7 @@ export async function getMainCurrentVolume(req, res) {
   // get the latest record on main tank
   const mainTank = await MainTank.findOne({
     where: { appId },
+    attributes: ["capacity", "level", "updatedAt"],
     order: [["createdAt", "DESC"]],
   });
 
@@ -123,6 +126,7 @@ export async function getSmallCurrentVolume(req, res) {
   // get the latest record on small tank
   const smallTank = await SmallTank.findOne({
     where: { appId },
+    attributes: ["capacity", "level", "updatedAt"],
     order: [["createdAt", "DESC"]],
   });
 
@@ -147,6 +151,7 @@ export async function getLidStatus(req, res) {
   // get the latest record on small tank
   const lidStatus = await PurifiedWaterTankLid.findOne({
     where: { appId },
+    attributes: ["id", "status", "openedAt", "closedAt"],
     order: [["createdAt", "DESC"]],
   });
 
