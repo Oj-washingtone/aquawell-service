@@ -58,6 +58,13 @@ export async function dispenseDisptchHistory(req, res) {
       where: {
         appId,
       },
+      attributes: [
+        "tap",
+        "amountReceived",
+        "amountDispensed",
+        "status",
+        "createdAt",
+      ],
     });
 
     return res.status(200).json(dispenseHistory);
